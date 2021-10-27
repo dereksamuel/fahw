@@ -6,7 +6,7 @@ from pydantic import BaseModel;
 
 #FastApi
 from fastapi import FastAPI;
-from fastapi import Body;
+from fastapi import Body, Query;
 
 app = FastAPI();
 
@@ -29,5 +29,13 @@ def home():
 
 @app.post("/agent/create")
 def new_agent(person: Person = Body(...)): # ... es obligatorio en python
-  # if (len(person["first_name"]))
   return person;
+
+@app.get("/agent/detail")
+def show_agent(
+  name: Optional[str] = Query(None, min_length = 1, max_length = 50),
+  age: int = Query(...), # si es obligatorio el query parameter deberia ser path parameter
+):
+  return {
+    name: age,
+  }
