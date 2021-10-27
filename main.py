@@ -8,7 +8,6 @@ def home():
     "Derek": "Es guapo",
   };
 
-
 @app.get("/agent/{agent_id}")
 def agentId():
   return {
