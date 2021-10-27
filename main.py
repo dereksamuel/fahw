@@ -10,7 +10,7 @@ def home():
 
 
 @app.get("/agent/{agent_id}")
-def home():
+def agentId():
   return {
     "Derek": "Es guapo ID Id",
   };
