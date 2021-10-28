@@ -1,5 +1,5 @@
 #Python
-from typing import Optional
+from typing import Any, Dict, Optional;
 
 #Pydantic
 from pydantic import BaseModel;
@@ -12,12 +12,18 @@ app = FastAPI();
 
 #Models
 class Person(BaseModel): # herencia de clases el basemodel
-  first_name : str;
-  last_name : str;
-  age : int;
-  hair_color : Optional[str] = None;
-  is_married : Optional[bool] = False;
-  abilities : dict = None;
+  first_name: str;
+  last_name: str;
+  age: int;
+  hair_color: Optional[str] = None;
+  is_married: Optional[bool] = False;
+  abilities: Optional[Dict[str, Any]] = None;
+
+class Location(BaseModel):
+  city: str;
+  lat: Optional[str] = None;
+  lon: Optional[str] = None;
+  country: Optional[str] = None;
 
 @app.get("/")
 def home():
@@ -63,4 +69,26 @@ def show_agent(
 ):
   return {
     agent_id: "It exists!",
+  };
+
+# Validations: Request Body
+@app.put("/agent/update/{agent_id}")
+def update_agent(
+  agent_id: int = Path(
+    ...,
+    gt = 0,
+    title = "Agent ID",
+    description = "This is the agent ID",
+  ),
+  new_agent: Person = Body(...),
+  location: Location = Body(...),
+):
+  results = new_agent.dict(); # agent to dict
+  results.update(location.dict()); # combinar dos diccionarios
+  # no x & z pues fastapi no soporta todavia todo esto
+
+  return {
+    "status": "UPDATED",
+    "data": results,
+    "ID": agent_id,
   };
