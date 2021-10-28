@@ -25,33 +25,67 @@ class Agent(BaseModel): # herencia de clases el basemodel
   first_name: str = Field(
     ...,
     min_length = 1,
-    max_length = 50
+    max_length = 50,
+    example = "Derek Samuel Miguel"
   );
   last_name: str = Field(
     ...,
     min_length = 1,
-    max_length = 50
+    max_length = 50,
+    example = "Ponche"
   );
   age: int = Field(
     ...,
     gt = 0,
-    le = 120
+    le = 120,
+    example = 25
   );
   email: EmailStr = Field(...);
   addressIp: Optional[IPvAnyAddress] = Field(...);
   website_url: Optional[HttpUrl] = Field(...);
-  hair_color: Optional[HairColor] = Field(default = None);
+  hair_color: Optional[HairColor] = Field(
+    default = None,
+    example = "blonde"
+  );
   is_married: Optional[bool] = Field(default = False);
   abilities: Optional[Dict[str, Any]] = Field(default = None);
+  # class Config():
+  #   schema_extra = {
+  #     "example": {
+  #       "first_name": "Derek Samuel",
+  #       "last_name": "Paul Pena",
+  #       "age": 18,
+  #       "email": "dereksamuelgr@gmail.com",
+  #       "addressIp": "192.168.5.111",
+  #       "website_url": "https://platzi.com/clases/2513-fastapi/41909-creando-ejemplos-de-request-body-automaticos/",
+  #       "hair_color": "blonde",
+  #       "is_married": False,
+  #       "abilities": {
+  #         "draw": True,
+  #         "guapo": True,
+  #         "fight with her self": True,
+  #       }
+  #     },
+  #   };
 
 class Location(BaseModel):
   city: str = Field(
     ...,
-    min_length = 0
+    min_length = 0,
+    example = "Bogota"
   );
-  lat: Optional[float] = Field(default = None); # latitud
-  lon: Optional[float] = Field(default = None); # longitud
-  country: Optional[str] = Field(default = None);
+  lat: Optional[float] = Field(
+    default = None,
+    example = 0.5
+  ); # latitud
+  lon: Optional[float] = Field(
+    default = None,
+    example = 0.598333
+  ); # longitud
+  country: Optional[str] = Field(
+    default = None,
+    example = "Colombia"
+  );
 
 @app.get("/")
 def home():
@@ -113,10 +147,11 @@ def update_agent(
 ):
   results = new_agent.dict(); # agent to dict
   results.update(location.dict()); # combinar dos diccionarios
-  # no x & z pues fastapi no soporta todavia todo esto
+  # # no x & z pues fastapi no soporta todavia todo esto
 
   return {
     "status": "UPDATED",
     "data": results,
+    "new_agent": new_agent,
     "ID": agent_id,
   };
