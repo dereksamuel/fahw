@@ -107,11 +107,13 @@ def show_agent(
     max_length = 50,
     title = "Agent Name",
     description = "This is the agent name(very secret). It's between 1 and 50 characters",
+    example = "Juan",
   ),
   age: int = Query(
     ...,
     title = "Agent age",
     description = "This is the agent AGE. This parameter is required because we need know the age(18 years old)",
+    example = 19,
   ), # si es obligatorio el query parameter deberia ser path parameter
 ):
   return {
@@ -127,6 +129,7 @@ def show_agent(
     gt = 0,
     title = "Agent ID",
     description = "This is the agent id(very SECRET)...",
+    example = 123,
   )
 ):
   return {
@@ -141,6 +144,7 @@ def update_agent(
     gt = 0,
     title = "Agent ID",
     description = "This is the agent ID",
+    example = 123,
   ),
   new_agent: Agent = Body(...),
   location: Location = Body(...),
