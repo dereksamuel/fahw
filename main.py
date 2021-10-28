@@ -3,7 +3,8 @@ from enum import Enum;
 from typing import Any, Dict, Optional;
 
 #Pydantic
-from pydantic import BaseModel, Field;
+from pydantic import BaseModel, Field, IPvAnyAddress;
+from pydantic.networks import EmailStr, HttpUrl;
 
 #FastApi
 from fastapi import FastAPI;
@@ -20,7 +21,7 @@ class HairColor(Enum):
   blonde = "Blonde".lower();
   red = "Red".lower();
 
-class Person(BaseModel): # herencia de clases el basemodel
+class Agent(BaseModel): # herencia de clases el basemodel
   first_name: str = Field(
     ...,
     min_length = 1,
@@ -36,6 +37,9 @@ class Person(BaseModel): # herencia de clases el basemodel
     gt = 0,
     le = 120
   );
+  email: EmailStr = Field(...);
+  addressIp: Optional[IPvAnyAddress] = Field(...);
+  website_url: Optional[HttpUrl] = Field(...);
   hair_color: Optional[HairColor] = Field(default = None);
   is_married: Optional[bool] = Field(default = False);
   abilities: Optional[Dict[str, Any]] = Field(default = None);
@@ -45,8 +49,8 @@ class Location(BaseModel):
     ...,
     min_length = 0
   );
-  lat: Optional[float] = Field(default = None);
-  lon: Optional[float] = Field(default = None);
+  lat: Optional[float] = Field(default = None); # latitud
+  lon: Optional[float] = Field(default = None); # longitud
   country: Optional[str] = Field(default = None);
 
 @app.get("/")
@@ -58,7 +62,7 @@ def home():
 # Request and Responde Body
 
 @app.post("/agent/create")
-def new_agent(person: Person = Body(...)): # ... es obligatorio en python
+def new_agent(person: Agent = Body(...)): # ... es obligatorio en python
   return person;
 
 @app.get("/agent/detail")
@@ -104,7 +108,7 @@ def update_agent(
     title = "Agent ID",
     description = "This is the agent ID",
   ),
-  new_agent: Person = Body(...),
+  new_agent: Agent = Body(...),
   location: Location = Body(...),
 ):
   results = new_agent.dict(); # agent to dict
