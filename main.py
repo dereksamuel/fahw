@@ -1,29 +1,53 @@
 #Python
+from enum import Enum;
 from typing import Any, Dict, Optional;
 
 #Pydantic
-from pydantic import BaseModel;
+from pydantic import BaseModel, Field;
 
 #FastApi
 from fastapi import FastAPI;
-from fastapi import Body, Query, Path;
+from fastapi import Body, Query, Path
 
 app = FastAPI();
 
 #Models
+
+class HairColor(Enum):
+  white = "White".lower();
+  brown = "Brown".lower();
+  black = "Black".lower();
+  blonde = "Blonde".lower();
+  red = "Red".lower();
+
 class Person(BaseModel): # herencia de clases el basemodel
-  first_name: str;
-  last_name: str;
-  age: int;
-  hair_color: Optional[str] = None;
-  is_married: Optional[bool] = False;
-  abilities: Optional[Dict[str, Any]] = None;
+  first_name: str = Field(
+    ...,
+    min_length = 1,
+    max_length = 50
+  );
+  last_name: str = Field(
+    ...,
+    min_length = 1,
+    max_length = 50
+  );
+  age: int = Field(
+    ...,
+    gt = 0,
+    le = 120
+  );
+  hair_color: Optional[HairColor] = Field(default = None);
+  is_married: Optional[bool] = Field(default = False);
+  abilities: Optional[Dict[str, Any]] = Field(default = None);
 
 class Location(BaseModel):
-  city: str;
-  lat: Optional[str] = None;
-  lon: Optional[str] = None;
-  country: Optional[str] = None;
+  city: str = Field(
+    ...,
+    min_length = 0
+  );
+  lat: Optional[float] = Field(default = None);
+  lon: Optional[float] = Field(default = None);
+  country: Optional[str] = Field(default = None);
 
 @app.get("/")
 def home():
