@@ -41,14 +41,21 @@ class Agent(BaseModel): # herencia de clases el basemodel
     example = 25
   );
   email: EmailStr = Field(...);
-  addressIp: Optional[IPvAnyAddress] = Field(...);
-  website_url: Optional[HttpUrl] = Field(...);
+  addressIp: Optional[IPvAnyAddress] = Field(
+    ...,
+    example = "127.0.0.1"
+  );
+  website_url: Optional[HttpUrl] = Field(
+    ...,
+    example = "https://platzi.com/clases/2514-fastapi-modularizacion-datos/41979-response-model/"
+  );
   hair_color: Optional[HairColor] = Field(
     default = None,
     example = "blonde"
   );
   is_married: Optional[bool] = Field(default = False);
   abilities: Optional[Dict[str, Any]] = Field(default = None);
+  password: str = Field(..., min_length=8);
   # class Config():
   #   schema_extra = {
   #     "example": {
@@ -67,6 +74,41 @@ class Agent(BaseModel): # herencia de clases el basemodel
   #       }
   #     },
   #   };
+
+class AgentOut(BaseModel):
+  first_name: str = Field(
+    ...,
+    min_length = 1,
+    max_length = 50,
+    example = "Derek Samuel Miguel"
+  );
+  last_name: str = Field(
+    ...,
+    min_length = 1,
+    max_length = 50,
+    example = "Ponche"
+  );
+  age: int = Field(
+    ...,
+    gt = 0,
+    le = 120,
+    example = 25
+  );
+  email: EmailStr = Field(...);
+  addressIp: Optional[IPvAnyAddress] = Field(
+    ...,
+    example = "127.0.0.1"
+  );
+  website_url: Optional[HttpUrl] = Field(
+    ...,
+    example = "https://platzi.com/clases/2514-fastapi-modularizacion-datos/41979-response-model/"
+  );
+  hair_color: Optional[HairColor] = Field(
+    default = None,
+    example = "blonde"
+  );
+  is_married: Optional[bool] = Field(default = False);
+  abilities: Optional[Dict[str, Any]] = Field(default = None);
 
 class Location(BaseModel):
   city: str = Field(
@@ -95,7 +137,7 @@ def home():
 
 # Request and Responde Body
 
-@app.post("/agent/create")
+@app.post("/agent/create", response_model = AgentOut)
 def new_agent(person: Agent = Body(...)): # ... es obligatorio en python
   return person;
 
