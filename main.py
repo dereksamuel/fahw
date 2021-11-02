@@ -8,7 +8,8 @@ from pydantic.networks import EmailStr, HttpUrl;
 
 #FastApi
 from fastapi import FastAPI;
-from fastapi import Body, Query, Path
+from fastapi import status;
+from fastapi import Body, Query, Path;
 
 app = FastAPI();
 
@@ -21,7 +22,7 @@ class HairColor(Enum):
   blonde = "Blonde".lower();
   red = "Red".lower();
 
-class Agent(BaseModel): # herencia de clases el basemodel
+class AgentBase(BaseModel):
   first_name: str = Field(
     ...,
     min_length = 1,
@@ -55,6 +56,8 @@ class Agent(BaseModel): # herencia de clases el basemodel
   );
   is_married: Optional[bool] = Field(default = False);
   abilities: Optional[Dict[str, Any]] = Field(default = None);
+
+class Agent(AgentBase): # herencia de clases el basemodel
   password: str = Field(..., min_length=8);
   # class Config():
   #   schema_extra = {
@@ -75,41 +78,6 @@ class Agent(BaseModel): # herencia de clases el basemodel
   #     },
   #   };
 
-class AgentOut(BaseModel):
-  first_name: str = Field(
-    ...,
-    min_length = 1,
-    max_length = 50,
-    example = "Derek Samuel Miguel"
-  );
-  last_name: str = Field(
-    ...,
-    min_length = 1,
-    max_length = 50,
-    example = "Ponche"
-  );
-  age: int = Field(
-    ...,
-    gt = 0,
-    le = 120,
-    example = 25
-  );
-  email: EmailStr = Field(...);
-  addressIp: Optional[IPvAnyAddress] = Field(
-    ...,
-    example = "127.0.0.1"
-  );
-  website_url: Optional[HttpUrl] = Field(
-    ...,
-    example = "https://platzi.com/clases/2514-fastapi-modularizacion-datos/41979-response-model/"
-  );
-  hair_color: Optional[HairColor] = Field(
-    default = None,
-    example = "blonde"
-  );
-  is_married: Optional[bool] = Field(default = False);
-  abilities: Optional[Dict[str, Any]] = Field(default = None);
-
 class Location(BaseModel):
   city: str = Field(
     ...,
@@ -129,7 +97,10 @@ class Location(BaseModel):
     example = "Colombia"
   );
 
-@app.get("/")
+@app.get(
+  path="/",
+  status_code=status.HTTP_200_OK()
+)
 def home():
   return {
     "Derek": "Es guapo",
@@ -137,11 +108,16 @@ def home():
 
 # Request and Responde Body
 
-@app.post("/agent/create", response_model = AgentOut)
+@app.post(
+  path="/agent/create",
+  response_model = AgentBase,
+  status_code=status.HTTP_201_CREATED())
 def new_agent(person: Agent = Body(...)): # ... es obligatorio en python
   return person;
 
-@app.get("/agent/detail")
+@app.get(
+  path="/agent/detail",
+  status_code=status.HTTP_200_OK())
 def show_agent(
   name: Optional[str] = Query(
     None,
@@ -164,7 +140,9 @@ def show_agent(
 
 #Validations query params
 
-@app.get("/agent/detail/{agent_id}") #encuentra el ultimo pero SIEMPRE TOMADO EL ULTIMO QUE ES IGUAL(endpoint)
+@app.get(
+  path="/agent/detail/{agent_id}",
+  status_code=status.HTTP_200_OK()) #encuentra el ultimo pero SIEMPRE TOMADO EL ULTIMO QUE ES IGUAL(endpoint)
 def show_agent(
   agent_id: int = Path(
     ...,
@@ -179,7 +157,9 @@ def show_agent(
   };
 
 # Validations: Request Body
-@app.put("/agent/update/{agent_id}")
+@app.put(
+  path="/agent/update/{agent_id}",
+  status_code=status.HTTP_200_OK())
 def update_agent(
   agent_id: int = Path(
     ...,
