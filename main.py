@@ -269,6 +269,19 @@ def login(
     ...,
     example="dereksamuelgr@gmail.com"),
   password: str = Form(...)):
+  """
+    ## Login
+
+    This path operation login for the agent
+
+    ### Parameters:
+    - Request Form parameter
+      - **username: str** -> A string with default python type
+    - Request Form Parameter
+      - **password: str** -> A string with default python type
+
+    Returns a BaseLogin model that is class
+  """
   return BaseLogin(username=username);
 
 @app.delete(
@@ -321,6 +334,33 @@ def contact(
   user_agent: Optional[str] = Header(default=None),
   ads: Optional[str] = Cookie(default=None),
 ):
+  """
+    ## Contact
+
+    This path operation contact us
+
+    ### Parameters:
+    first_name: str = Form(
+      ...,
+      max_length=20,
+      min_length=1,
+    ),
+    last_name: str = Form(
+      ...,
+      max_length=20,
+      min_length=1,
+    ),
+    email: EmailStr = Form(...),
+    message: str = Form(
+      ...,
+      min_length=20,
+      max_length=250
+    ),
+    user_agent: Optional[str] = Header(default=None),
+    ads: Optional[str] = Cookie(default=None),
+
+    Returns a user_agent of the computer client
+  """
   return user_agent;
 
 # Files and Uploads Files post
@@ -331,6 +371,20 @@ def contact(
 def post_image(
   image: UploadFile = File(...) # Type of var y el otro el valor de var
 ):
+  """
+    ## Contact
+
+    This path operation contact us
+
+    ### Parameters:
+    - Image -> Type image or file of the input type file
+
+    Returns a dict like: {
+      "Filename": image.filename,
+      "Format": image.content_type,
+      "Size(kb)": round(len(image.file.read()) / 1024, ndigits=2),
+    }
+  """
   return {
     "Filename": image.filename,
     "Format": image.content_type,
