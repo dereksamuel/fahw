@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, IPvAnyAddress;
 from pydantic.networks import EmailStr, HttpUrl;
 
 #FastApi
+from fastapi import HTTPException;
 from fastapi import FastAPI;
 from fastapi import status;
 from fastapi import Body, Query, Path, Form, Header, Cookie, UploadFile, File;
@@ -147,6 +148,14 @@ def show_agent(
 
 #Validations query params
 
+agents = [
+  123,
+  1,
+  2,
+  3,
+  321
+];
+
 @app.get(
   path="/agent/detail/{agent_id}",
   status_code=status.HTTP_200_OK) #encuentra el ultimo pero SIEMPRE TOMADO EL ULTIMO QUE ES IGUAL(endpoint)
@@ -159,6 +168,11 @@ def show_agent(
     example = 123,
   )
 ):
+  if agent_id not in agents:
+    raise HTTPException(
+      status_code=status.HTTP_404_NOT_FOUND,
+      detail="This agent doesn't exist"
+    );
   return {
     agent_id: "It exists!",
   };
