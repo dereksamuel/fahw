@@ -1,7 +1,6 @@
 #Python
 from enum import Enum;
 from typing import Any, Dict, Optional
-from fastapi.param_functions import Form;
 
 #Pydantic
 from pydantic import BaseModel, Field, IPvAnyAddress;
@@ -10,7 +9,7 @@ from pydantic.networks import EmailStr, HttpUrl;
 #FastApi
 from fastapi import FastAPI;
 from fastapi import status;
-from fastapi import Body, Query, Path;
+from fastapi import Body, Query, Path, Form, Header, Cookie;
 
 app = FastAPI();
 
@@ -190,7 +189,7 @@ def update_agent(
     "ID": agent_id,
   };
 
-#
+# Form
 @app.post(
   path="/login",
   response_model=BaseLogin,
@@ -202,3 +201,30 @@ def login(
     example="dereksamuelgr@gmail.com"),
   password: str = Form(...)):
   return BaseLogin(username=username);
+
+# Cookies and Headers Parameters
+@app.post(
+  path="/contact",
+  status_code=status.HTTP_200_OK
+)
+def contact(
+  first_name: str = Form(
+    ...,
+    max_length=20,
+    min_length=1,
+  ),
+  last_name: str = Form(
+    ...,
+    max_length=20,
+    min_length=1,
+  ),
+  email: EmailStr = Form(...),
+  message: str = Form(
+    ...,
+    min_length=20,
+    max_length=250
+  ),
+  user_agent: Optional[str] = Header(default=None),
+  ads: Optional[str] = Cookie(default=None),
+):
+  return user_agent;
