@@ -121,14 +121,27 @@ def home():
   path="/agent/create",
   response_model = AgentBase,
   status_code=status.HTTP_201_CREATED,
-  tags=["Agents"])
+  tags=["Agents"],
+  summary="Create Agent in the app")
 def new_agent(person: Agent = Body(...)): # ... es obligatorio en python
+  """
+    ## Create Agent
+
+    This path operation creates a agent in the app save the information in the database.
+
+    ### Parameters:
+    - Request Body Parameter
+      - **agent: Agent** -> A agent model with first name, last name, hair color and maritial status
+
+    Returns a agent model with first name, last name age, hair color and maritial status
+  """
   return person;
 
 @app.get(
   path="/agent/detail",
   status_code=status.HTTP_200_OK,
-  tags=["Agents"])
+  tags=["Agents"],
+  deprecated=True)
 def show_agent(
   name: Optional[str] = Query(
     None,
@@ -145,6 +158,18 @@ def show_agent(
     example = 19,
   ), # si es obligatorio el query parameter deberia ser path parameter
 ):
+  """
+    ## Show Agent detail
+
+    This path operation show a agent in the app save the information in the database.
+
+    ### Parameters:
+    - Request Query Parameter
+      - **name: str** -> A str with default python type and this is optional
+      - **age: int** -> A number with default python type and this is required
+
+    Returns a agent model with first name, last name age, hair color and maritial status
+  """
   return {
     name: age,
   }
@@ -172,6 +197,17 @@ def show_agent(
     example = 123,
   )
 ):
+  """
+    ## Show only Agent by id
+
+    This path operation show a agent by id in the app save the information in the database.
+
+    ### Parameters:
+    - Request Path Parameter
+      - **agentId: int** -> A number with default python type
+
+    Returns a agent model with first name, last name age, hair color and maritial status
+  """
   if agent_id not in agents:
     raise HTTPException(
       status_code=status.HTTP_404_NOT_FOUND,
@@ -197,6 +233,19 @@ def update_agent(
   new_agent: Agent = Body(...),
   location: Location = Body(...),
 ):
+  """
+    ## Update Agent
+
+    This path operation updates agent by id in the app save the information in the database.
+
+    ### Parameters:
+    - Request Path Parameter
+      - **agentId: int** -> A number with default python type
+    - Request Body Parameter
+      - **agent: Agent** -> A agent model with first name, last name, hair color and maritial status
+
+    Returns a agent model with first name, last name age, hair color and maritial status
+  """
   results = new_agent.dict(); # agent to dict
   results.update(location.dict()); # combinar dos diccionarios
   # # no x & z pues fastapi no soporta todavia todo esto
@@ -223,13 +272,24 @@ def login(
   return BaseLogin(username=username);
 
 @app.delete(
-  path="/{agent_id}",
+  path="/agent/{agent_id}",
   status_code=status.HTTP_200_OK,
   tags=["Agents"]
 )
 def agent_deleted(
   agent_id: str = Path(...)
 ):
+  """
+    ## Delete Agent
+
+    This path operation deletes agent in the app save the information in the database.
+
+    ### Parameters:
+    - Request Path Parameter
+      - **agentId: int** -> A number with default python type
+
+    Returns a dict with two values: status, agent_id
+  """
   return {
     "status": "Deleted successfully",
     "agent_id": agent_id,
