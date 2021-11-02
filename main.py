@@ -107,7 +107,8 @@ class BaseLogin(BaseModel):
 
 @app.get(
   path="/",
-  status_code=status.HTTP_200_OK
+  status_code=status.HTTP_200_OK,
+  tags=["Application"]
 )
 def home():
   return {
@@ -119,13 +120,15 @@ def home():
 @app.post(
   path="/agent/create",
   response_model = AgentBase,
-  status_code=status.HTTP_201_CREATED)
+  status_code=status.HTTP_201_CREATED,
+  tags=["Agents"])
 def new_agent(person: Agent = Body(...)): # ... es obligatorio en python
   return person;
 
 @app.get(
   path="/agent/detail",
-  status_code=status.HTTP_200_OK)
+  status_code=status.HTTP_200_OK,
+  tags=["Agents"])
 def show_agent(
   name: Optional[str] = Query(
     None,
@@ -158,7 +161,8 @@ agents = [
 
 @app.get(
   path="/agent/detail/{agent_id}",
-  status_code=status.HTTP_200_OK) #encuentra el ultimo pero SIEMPRE TOMADO EL ULTIMO QUE ES IGUAL(endpoint)
+  status_code=status.HTTP_200_OK,
+  tags=["Agents"]) #encuentra el ultimo pero SIEMPRE TOMADO EL ULTIMO QUE ES IGUAL(endpoint)
 def show_agent(
   agent_id: int = Path(
     ...,
@@ -180,7 +184,8 @@ def show_agent(
 # Validations: Request Body
 @app.put(
   path="/agent/update/{agent_id}",
-  status_code=status.HTTP_200_OK)
+  status_code=status.HTTP_200_OK,
+  tags=["Agents"])
 def update_agent(
   agent_id: int = Path(
     ...,
@@ -207,7 +212,8 @@ def update_agent(
 @app.post(
   path="/login",
   response_model=BaseLogin,
-  status_code=status.HTTP_200_OK
+  status_code=status.HTTP_200_OK,
+  tags=["Agents"]
 )
 def login(
   username: str = Form(
@@ -216,10 +222,24 @@ def login(
   password: str = Form(...)):
   return BaseLogin(username=username);
 
+@app.delete(
+  path="/{agent_id}",
+  status_code=status.HTTP_200_OK,
+  tags=["Agents"]
+)
+def agent_deleted(
+  agent_id: str = Path(...)
+):
+  return {
+    "status": "Deleted successfully",
+    "agent_id": agent_id,
+  }
+
 # Cookies and Headers Parameters
 @app.post(
   path="/contact",
-  status_code=status.HTTP_200_OK
+  status_code=status.HTTP_200_OK,
+  tags=["Application"]
 )
 def contact(
   first_name: str = Form(
@@ -246,6 +266,7 @@ def contact(
 # Files and Uploads Files post
 @app.post(
   path="/post-image",
+  tags=["Application"]
 )
 def post_image(
   image: UploadFile = File(...) # Type of var y el otro el valor de var
