@@ -1,6 +1,7 @@
 #Python
 from enum import Enum;
-from typing import Any, Dict, Optional;
+from typing import Any, Dict, Optional
+from fastapi.param_functions import Form;
 
 #Pydantic
 from pydantic import BaseModel, Field, IPvAnyAddress;
@@ -97,9 +98,16 @@ class Location(BaseModel):
     example = "Colombia"
   );
 
+class BaseLogin(BaseModel):
+  username: str = Field(
+    ...,
+    min_length=1,
+    max_length=30,
+    example="dereksamuelgr@gmail.com");
+
 @app.get(
   path="/",
-  status_code=status.HTTP_200_OK()
+  status_code=status.HTTP_200_OK
 )
 def home():
   return {
@@ -111,13 +119,13 @@ def home():
 @app.post(
   path="/agent/create",
   response_model = AgentBase,
-  status_code=status.HTTP_201_CREATED())
+  status_code=status.HTTP_201_CREATED)
 def new_agent(person: Agent = Body(...)): # ... es obligatorio en python
   return person;
 
 @app.get(
   path="/agent/detail",
-  status_code=status.HTTP_200_OK())
+  status_code=status.HTTP_200_OK)
 def show_agent(
   name: Optional[str] = Query(
     None,
@@ -142,7 +150,7 @@ def show_agent(
 
 @app.get(
   path="/agent/detail/{agent_id}",
-  status_code=status.HTTP_200_OK()) #encuentra el ultimo pero SIEMPRE TOMADO EL ULTIMO QUE ES IGUAL(endpoint)
+  status_code=status.HTTP_200_OK) #encuentra el ultimo pero SIEMPRE TOMADO EL ULTIMO QUE ES IGUAL(endpoint)
 def show_agent(
   agent_id: int = Path(
     ...,
@@ -159,7 +167,7 @@ def show_agent(
 # Validations: Request Body
 @app.put(
   path="/agent/update/{agent_id}",
-  status_code=status.HTTP_200_OK())
+  status_code=status.HTTP_200_OK)
 def update_agent(
   agent_id: int = Path(
     ...,
@@ -181,3 +189,16 @@ def update_agent(
     "new_agent": new_agent,
     "ID": agent_id,
   };
+
+#
+@app.post(
+  path="/login",
+  response_model=BaseLogin,
+  status_code=status.HTTP_200_OK
+)
+def login(
+  username: str = Form(
+    ...,
+    example="dereksamuelgr@gmail.com"),
+  password: str = Form(...)):
+  return BaseLogin(username=username);
